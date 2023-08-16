@@ -50,18 +50,18 @@ async function getShowsByTerm(term) {
 
 function displayShows(shows) {
   $showsList.empty();
-
   for (const show of shows) {
+    console.log(show.show)
     const $show = $(`
-        <div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
+        <div data-show-id="${show.show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img
-              src="http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg"
-              alt="Bletchly Circle San Francisco"
+              src="${show.show?.image?.original}"
+              alt="image of ${show.show.name}"
               class="w-25 me-3">
            <div class="media-body">
-             <h5 class="text-primary">${show.name}</h5>
-             <div><small>${show.summary}</small></div>
+             <h5 class="text-primary">${show.show.name}</h5>
+             <div><small>${show.show.summary}</small></div>
              <button class="btn btn-outline-light btn-sm Show-getEpisodes">
                Episodes
              </button>
@@ -87,7 +87,7 @@ async function searchShowsAndDisplay() {
   displayShows(shows);
 }
 
-$searchForm.on("submit", async function handleSearchForm (evt) {
+$searchForm.on("submit", async function handleSearchForm(evt) {
   evt.preventDefault();
   await searchShowsAndDisplay();
 });
