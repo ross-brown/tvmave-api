@@ -25,7 +25,7 @@ async function getShowsByTerm(term) {
   ({
     id: show.id,
     name: show.name,
-    summary: show.summary,
+    summary: show.summary || 'No Summary...',
     image: show?.image?.original || DEFAULT_IMAGE
   })
   );
@@ -98,14 +98,17 @@ async function getEpisodesOfShow(id) {
  */
 
 function displayEpisodes(episodes) {
-  $episodesArea.show();
   $episdoesList.empty();
-
   for (const episode of episodes) {
-    const $listItem = $(`<li>${episode.name} (season ${episode.season}, number ${episode.number})</li>`);
+    const $listItem = $(`
+    <li>
+    ${episode.name} (season ${episode.season}, number ${episode.number})
+    </li>
+    `);
 
     $episdoesList.append($listItem);
   }
+  $episodesArea.show();
 }
 
 
