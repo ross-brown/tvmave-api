@@ -3,8 +3,9 @@
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
+const $episodeButton = $(".Show-getEpisodes");
 
-//TODO: global for tinyurl
+const DEFAULT_IMAGE = "https://tinyurl.com/tv-missing";
 
 /** Given a search term, search for tv shows that match that query.
  *
@@ -12,14 +13,22 @@ const $searchForm = $("#searchForm");
  *    Each show object should contain exactly: {id, name, summary, image}
  *    (if no image URL given by API, put in a default image URL)
  */
-//TODO: const data = res.json()
-//TODO: get only needed data out
+
 async function getShowsByTerm(term) {
   const params = new URLSearchParams({ q: term });
 
   const response = await fetch(`https://api.tvmaze.com/search/shows?${params}`);
 
-  return await response.json();
+  const data = await response.json();
+
+  return data.map( ({show}) =>
+    ({
+      id: show.id,
+      name: show.name,
+      summary: show.summary,
+      image: show?.image?.original || DEFAULT_IMAGE
+    })
+  );
 }
 
 
@@ -31,17 +40,16 @@ async function getShowsByTerm(term) {
 function displayShows(shows) {
   $showsList.empty();
   for (const show of shows) {
-    const currShow = show.show;
     const $show = $(`
-        <div data-show-id="${currShow.id}" class="Show col-md-12 col-lg-6 mb-4">
+        <div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img
-              src="${currShow?.image?.original || "https://tinyurl.com/tv-missing"}"
-              alt="image of ${currShow.name}"
+              src="${show.image}"
+              alt="image of ${show.name}"
               class="w-25 me-3">
            <div class="media-body">
-             <h5 class="text-primary">${currShow.name}</h5>
-             <div><small>${currShow.summary}</small></div>
+             <h5 class="text-primary">${show.name}</h5>
+             <div><small>${show.summary}</small></div>
              <button class="btn btn-outline-light btn-sm Show-getEpisodes">
                Episodes
              </button>
@@ -77,10 +85,26 @@ $searchForm.on("submit", async function handleSearchForm(evt) {
  *      { id, name, season, number }
  */
 
-// async function getEpisodesOfShow(id) { }
+async function getEpisodesOfShow(id) {
+  const response = await fetch(
+    `https://api.tvmaze.com/shows/${id}/episodes`
+  );
 
+  const data = await response.json();
+
+  return data.map( ({episode}) =>
+  ({
+    id: episode.id,
+    name: episode.name,
+    season: episode.season,
+    number: episode.number
+  })
+  );
+
+}
 /** Write a clear docstring for this function... */
 
-// function displayEpisodes(episodes) { }
+function displayEpisodes(episodes) { }
+
 
 // add other functions that will be useful / match our structure & design
