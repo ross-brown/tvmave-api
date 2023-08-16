@@ -3,7 +3,7 @@
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
-const $episodeButton = $(".Show-getEpisodes");
+const $episdoesList = $("#episodesList");
 
 const DEFAULT_IMAGE = "https://tinyurl.com/tv-missing";
 
@@ -21,13 +21,13 @@ async function getShowsByTerm(term) {
 
   const data = await response.json();
 
-  return data.map( ({show}) =>
-    ({
-      id: show.id,
-      name: show.name,
-      summary: show.summary,
-      image: show?.image?.original || DEFAULT_IMAGE
-    })
+  return data.map(({ show }) =>
+  ({
+    id: show.id,
+    name: show.name,
+    summary: show.summary,
+    image: show?.image?.original || DEFAULT_IMAGE
+  })
   );
 }
 
@@ -92,19 +92,38 @@ async function getEpisodesOfShow(id) {
 
   const data = await response.json();
 
-  return data.map( ({episode}) =>
+  return data.map(({ id, name, season, number }) =>
   ({
-    id: episode.id,
-    name: episode.name,
-    season: episode.season,
-    number: episode.number
+    id,
+    name,
+    season,
+    number
   })
   );
-
 }
 /** Write a clear docstring for this function... */
 
-function displayEpisodes(episodes) { }
+function displayEpisodes(episodes) {
+  $episodesArea.show();
+  $episdoesList.empty();
+
+  for (const episode of episodes) {
+    const $listItem = $(`<li>${episode.name} (season ${episode.season}, number ${episode.number})</li>`);
+
+    $episdoesList.append($listItem);
+  }
+}
 
 
-// add other functions that will be useful / match our structure & design
+
+
+async function searchEpisodesAndDisplay(showId) {
+  const episodes = await getEpisodesOfShow(showId);
+  displayEpisodes(episodes);
+}
+
+
+$showsList.on("click", ".Show-getEpisodes", function (evt) {
+  const showId = $(evt.target).closest(".Show").data("show-id");
+  searchEpisodesAndDisplay(showId);
+});
