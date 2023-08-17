@@ -86,11 +86,16 @@ $searchForm.on("submit", async function handleSearchForm(evt) {
  */
 
 async function getEpisodesOfShow(id) {
-  const response = await fetch(`https://api.tvmaze.com/shows/${id}/episodes`);
+  try {
+    const response = await fetch(`https://api.tvmaze.com/shows/${id}/episodes`);
 
-  const data = await response.json();
+    const data = await response.json();
 
-  return data.map(({ id, name, season, number }) => ({ id, name, season, number }));
+    return data.map(({ id, name, season, number }) => ({ id, name, season, number }));
+  } catch (error) {
+    console.log("Error message:", error.message);
+    throw new Error(error);
+  }
 }
 
 /** displayEpisodes: reveal episodes area and append each episode from input array to DOM.
